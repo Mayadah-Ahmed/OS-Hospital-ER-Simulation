@@ -37,7 +37,7 @@ public class Doctor implements Runnable{
 
                 boolean treatmentCompleted = false;
                 try {
-                    Thread.sleep(randomTreatmentTime * 1000);
+                    Thread.sleep(randomTreatmentTime * 1000L);
                     treatmentCompleted = true;
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
