@@ -26,8 +26,11 @@ public class WaitingRoom {
         patients.add(patient);
         lock.V();
         TakenSeats.V();
-        System.out.println(patient.getName()+ " entered Waiting room");
-
+        if (patient.isShutdownSignal()) {
+            System.out.println("Shutdown signal entered Waiting room");
+        } else {
+            System.out.println(patient.getName() + " entered Waiting room");
+        }
     }
     public  Patient TakePatient(){
         TakenSeats.P();
@@ -41,5 +44,10 @@ public class WaitingRoom {
     public void ReturnPatient (Patient patient) {
         System.out.println(patient.getName() + " is returning to the waiting room");
         AddPatient(patient);
+    }
+
+    public void AddShutdownSignals(int numberOfDoctors){
+        for(int i = 0; i < numberOfDoctors; i++)
+            AddPatient(Patient.createShutdownSignal());
     }
 }
