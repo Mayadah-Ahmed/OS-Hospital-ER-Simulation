@@ -16,30 +16,37 @@ public class WaitingRoom {
         lock = new HospitalSemaphore(1);
 
     }
-    public void AddPatient(Patient patient){
-        if (!EmptySeats.tryP(0 , TimeUnit.MILLISECONDS)){
-            System.out.println("Waiting room is full!, Please wait outside");
-            System.out.println(patient.getName() + "  is waiting outside for an empty seat");
+    public void AddPatient(Patient patient) {
+
+        if (patient.isShutdownSignal()) {
             EmptySeats.P();
+            lock.P();
+            patients.add(patient);
+            lock.V();
+            System.out.println("Shutdown signal entered Waiting room");
+            TakenSeats.V();
+            return;
         }
         lock.P();
+        if (!EmptySeats.tryP(0, TimeUnit.MILLISECONDS)) {
+            lock.V();
+            System.out.println("The waiting room is full.");
+            System.out.println(patient.getName() + " is waiting outside for an available seat.");
+            EmptySeats.P();
+            lock.P();
+        }
+        System.out.println(patient.getName() + " entered the waiting room.");
         patients.add(patient);
         lock.V();
         TakenSeats.V();
-        if (patient.isShutdownSignal()) {
-            System.out.println("Shutdown signal entered Waiting room");
-        } else {
-            System.out.println(patient.getName() + " entered Waiting room");
-        }
     }
-    public  Patient TakePatient(){
+    public Patient TakePatient(){
         TakenSeats.P();
         lock.P();
         Patient patient = patients.remove();
         lock.V();
         EmptySeats.V();
         return patient;
-
     }
     public void ReturnPatient (Patient patient) {
         System.out.println(patient.getName() + " is returning to the waiting room");

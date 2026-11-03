@@ -29,7 +29,7 @@ public class Patient implements Runnable {
     }
     @Override
     public void run (){
-        System.out.println(getName()+ " has arrived");
+        System.out.println(getName()+ " arrived");
 
         wr.AddPatient(this);
     }
